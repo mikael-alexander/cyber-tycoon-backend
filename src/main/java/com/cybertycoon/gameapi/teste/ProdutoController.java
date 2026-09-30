@@ -1,4 +1,4 @@
-package com.teste.java_vscode.demo;
+package com.cybertycoon.gameapi.teste;
 
 import java.math.BigDecimal;
 import java.util.List;
