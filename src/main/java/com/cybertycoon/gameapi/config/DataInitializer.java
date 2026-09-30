@@ -1,6 +1,8 @@
 package com.cybertycoon.gameapi.config;
 
+import com.cybertycoon.gameapi.model.Funcionario;
 import com.cybertycoon.gameapi.model.Missao;
+import com.cybertycoon.gameapi.repository.FuncionarioRepository;
 import com.cybertycoon.gameapi.repository.MissaoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +14,7 @@ import java.util.List;
 public class DataInitializer {
 
     @Bean
-    CommandLineRunner initDatabase(MissaoRepository missaoRepository) {
+    CommandLineRunner initDatabase(MissaoRepository missaoRepository, FuncionarioRepository funcionarioRepository) {
         return args -> {
             // Verifica se o banco de dados já possui missões para não duplicar toda vez que reiniciar
             if (missaoRepository.count() == 0) {
@@ -47,11 +49,40 @@ public class DataInitializer {
 
                 // Salvando todas na tabela 'missao' do PostgreSQL
                 missaoRepository.saveAll(List.of(m1, m2, m3, m4));
-                
-                System.out.println("🚀 [Cyber Tycoon] Banco de dados populado com as missões iniciais com sucesso!");
+                    System.out.println("🚀 [Cyber Tycoon] Banco de dados populado com as missões iniciais com sucesso!");
             } else {
                 System.out.println("ℹ️ [Cyber Tycoon] O banco já possui missões cadastradas. Pulando etapa de seed.");
             }
+
+                // --- SEED DE FUNCIONÁRIOS (MERCADO DE TALENTOS) ---
+            if (funcionarioRepository.count() == 0) {
+                Funcionario f1 = new Funcionario();
+                f1.setNome("Neo_Nerd (Estagiário)");
+                f1.setAtaque(15);
+                f1.setDefesa(5);
+                f1.setSalarioDiario(80.00);
+                f1.setJogador(null); // NULL significa que está livre no mercado para ser contratado
+
+                Funcionario f2 = new Funcionario();
+                f2.setNome("Trinity_Sec (Especialista)");
+                f2.setAtaque(45);
+                f2.setDefesa(30);
+                f2.setSalarioDiario(350.00);
+                f2.setJogador(null);
+
+                Funcionario f3 = new Funcionario();
+                f3.setNome("Morpheus_Net (Lenda)");
+                f3.setAtaque(85);
+                f3.setDefesa(70);
+                f3.setSalarioDiario(1200.00);
+                f3.setJogador(null);
+
+                funcionarioRepository.saveAll(List.of(f1, f2, f3));
+                System.out.println("👥 [Cyber Tycoon] Banco de dados populado com os candidatos a Hacker!");
+            } else {
+                System.out.println("ℹ️ [Cyber Tycoon] O banco já possui funcionários cadastrados. Pulando etapa de seed.");
+            }
+            
         };
     }
 }
