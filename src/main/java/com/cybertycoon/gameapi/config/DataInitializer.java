@@ -47,8 +47,15 @@ public class DataInitializer {
                 m4.setRecompensaDinheiro(50000.00);
                 m4.setStatus("DISPONIVEL");
 
+                // Missão 5: Muito Difícil
+                Missao m5 = new Missao();
+                m5.setDescricao("Infiltrar-se no sistema do FBI para roubar informações sigilosas.");
+                m5.setDificuldade(200); // Dificuldade alta
+                m5.setRecompensaDinheiro(100000.00);
+                m5.setStatus("DISPONIVEL");
+
                 // Salvando todas na tabela 'missao' do PostgreSQL
-                missaoRepository.saveAll(List.of(m1, m2, m3, m4));
+                missaoRepository.saveAll(List.of(m1, m2, m3, m4, m5));
                     System.out.println("🚀 [Cyber Tycoon] Banco de dados populado com as missões iniciais com sucesso!");
             } else {
                 System.out.println("ℹ️ [Cyber Tycoon] O banco já possui missões cadastradas. Pulando etapa de seed.");

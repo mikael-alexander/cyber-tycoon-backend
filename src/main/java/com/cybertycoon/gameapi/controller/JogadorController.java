@@ -38,12 +38,23 @@ public class JogadorController {
         return jogadorRepository.save(novoJogador);
     }
 
+    @Autowired
+    private com.cybertycoon.gameapi.repository.FuncionarioRepository funcionarioRepository;
+
     // 2b. Endpoint para deletar um jogador (ex: DELETE /api/jogadores/1)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarJogador(@PathVariable Long id) {
         if (!jogadorRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+
+        // Antes de deletar o jogador, demite os hackers (para não quebrar a chave estrangeira)
+        java.util.List<com.cybertycoon.gameapi.model.Funcionario> equipe = funcionarioRepository.findByJogadorId(id);
+        for (com.cybertycoon.gameapi.model.Funcionario f : equipe) {
+            f.setJogador(null);
+            funcionarioRepository.save(f);
+        }
+
         jogadorRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

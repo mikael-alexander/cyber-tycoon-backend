@@ -10,4 +10,7 @@ import java.util.List;
 public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> {
     // Busca funcionários que ainda NÃO foram contratados por nenhum jogador (jogador_id é NULL)
     List<Funcionario> findByJogadorIsNull();
+
+    // Busca funcionários contratados por um jogador específico
+    List<Funcionario> findByJogadorId(Long jogadorId);
 }
