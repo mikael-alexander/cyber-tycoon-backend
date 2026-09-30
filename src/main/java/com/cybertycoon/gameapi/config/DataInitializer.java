@@ -28,18 +28,25 @@ public class DataInitializer {
                 Missao m2 = new Missao();
                 m2.setDescricao("Infiltrar-se no servidor de e-mails de uma startup concorrente.");
                 m2.setDificuldade(35); // Dificuldade média
-                m2.setRecompensaDinheiro(2500.00);
+                m2.setRecompensaDinheiro(1500.00);
                 m2.setStatus("DISPONIVEL");
 
                 // Missão 3: Difícil
                 Missao m3 = new Missao();
                 m3.setDescricao("Descriptografar o banco de dados principal de um grande banco nacional.");
                 m3.setDificuldade(75); // Dificuldade alta
-                m3.setRecompensaDinheiro(15000.00);
+                m3.setRecompensaDinheiro(10000.00);
                 m3.setStatus("DISPONIVEL");
 
+                // Missão 4: Muito Difícil
+                Missao m4 = new Missao();
+                m4.setDescricao("Infiltrar-se no sistema do governo para roubar documentos sensíveis.");
+                m4.setDificuldade(99); // Dificuldade alta
+                m4.setRecompensaDinheiro(50000.00);
+                m4.setStatus("DISPONIVEL");
+
                 // Salvando todas na tabela 'missao' do PostgreSQL
-                missaoRepository.saveAll(List.of(m1, m2, m3));
+                missaoRepository.saveAll(List.of(m1, m2, m3, m4));
                 
                 System.out.println("🚀 [Cyber Tycoon] Banco de dados populado com as missões iniciais com sucesso!");
             } else {

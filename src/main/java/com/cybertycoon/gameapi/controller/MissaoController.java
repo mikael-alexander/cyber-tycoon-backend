@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/missoes")
-@CrossOrigin(origins = "http://localhost:4200") // Permite acesso do Angular
 public class MissaoController {
 
     @Autowired

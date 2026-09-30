@@ -20,6 +20,8 @@ public class GameService {
 
     private final Random random = new Random();
 
+    private static final int LIMITE_MISSOES_POR_DIA = 4;
+
     public String executarMissao(Long jogadorId, Long missaoId, int poderAtaqueEquipe) {
         // 1. Busca o jogador e a missão no PostgreSQL
         Jogador jogador = jogadorRepository.findById(jogadorId)
@@ -28,31 +30,44 @@ public class GameService {
         Missao missao = missaoRepository.findById(missaoId)
                 .orElseThrow(() -> new RuntimeException("Missão não encontrada"));
 
-        // 2. Regra do Jogo: Calcular a chance de sucesso
-        // Exemplo: Se o poder da equipe é 40 e a dificuldade é 30, a chance base aumenta.
-        int fatorSorte = random.nextInt(100); // Sorteia um número de 0 a 99 (como um dado de RPG de 100 lados)
+        // 2. Verifica se o jogador ainda tem ações disponíveis no dia
+        int missoesFeitas = jogador.getMissoesHoje() == null ? 0 : jogador.getMissoesHoje();
+        if (missoesFeitas >= LIMITE_MISSOES_POR_DIA) {
+            return "DIA_ENCERRADO: Você já realizou " + LIMITE_MISSOES_POR_DIA + " missões hoje. Avance o turno para continuar.";
+        }
+
+        // 3. Incrementa o contador de missões do dia
+        jogador.setMissoesHoje(missoesFeitas + 1);
+
+        // 4. Regra do Jogo: Calcular a chance de sucesso
+        int fatorSorte = random.nextInt(100);
         int scoreFinal = poderAtaqueEquipe + fatorSorte;
 
-        // Se o score final da equipe superar a dificuldade da missão, é um SUCESSO
+        String resultado;
         if (scoreFinal >= missao.getDificuldade()) {
-            // Recompensa o jogador
             jogador.modificarDinheiro(missao.getRecompensaDinheiro());
-            jogador.setReputacao(jogador.getReputacao() + (missao.getDificuldade() / 5)); // Ganha reputação proporcional
-            
-            // Salva as alterações no banco
-            jogadorRepository.save(jogador);
-            
-            return "SUCESSO! Sua equipe conseguiu " + missao.getDescricao() + 
-                   " Vocês ganharam R$ " + missao.getRecompensaDinheiro();
+            jogador.setReputacao(jogador.getReputacao() + (missao.getDificuldade() / 5));
+            resultado = "SUCESSO! Sua equipe conseguiu " + missao.getDescricao() +
+                       " Vocês ganharam R$ " + missao.getRecompensaDinheiro();
         } else {
-            // FALHA: O jogador perde uma taxa de "limpeza de rastros digitais" ou multa
-            Double prejuizo = missao.getRecompensaDinheiro() * 0.20; // Perde 20% do valor que ganharia
+            Double prejuizo = missao.getRecompensaDinheiro() * 2; // Prejuízo é o dobro da recompensa
             jogador.modificarDinheiro(-prejuizo);
-            
-            jogadorRepository.save(jogador);
-            
-            return "FALHA! A empresa descobriu a invasão. Você teve que gastar R$ " + prejuizo + 
-                   " contratando advogados e limpando seus rastros digitais.";
+            resultado = "FALHA! A empresa descobriu a invasão. Você teve que gastar R$ " + prejuizo +
+                       " contratando advogados e limpando seus rastros digitais.";
         }
+
+        // 5. Se for a última missão do dia, avisa o jogador
+        if (jogador.getMissoesHoje() >= LIMITE_MISSOES_POR_DIA) {
+            if (jogador.getDinheiro() < 0) {
+                resultado += " | 🚨 VOCÊ FOI PRESO! Seus fundos estão negativos e a polícia rastreou sua localização.";
+            } else {
+                resultado += " | ⚠️ Limite diário atingido! Avance o turno para continuar.";
+            }
+        } else {
+            resultado += " | Ações restantes hoje: " + (LIMITE_MISSOES_POR_DIA - jogador.getMissoesHoje());
+        }
+
+        jogadorRepository.save(jogador);
+        return resultado;
     }
 }

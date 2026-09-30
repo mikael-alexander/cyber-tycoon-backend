@@ -18,6 +18,7 @@ public class Jogador {
     private Double dinheiro;
     private Integer reputacao;
     private Integer diaAtual;
+    private Integer missoesHoje = 0; // Contador de missões tentadas no dia atual
 
     public void modificarDinheiro(Double valor) {
     if (this.dinheiro == null) this.dinheiro = 0.0;
