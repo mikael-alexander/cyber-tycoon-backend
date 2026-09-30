@@ -18,4 +18,9 @@ public class Jogador {
     private Double dinheiro;
     private Integer reputacao;
     private Integer diaAtual;
+
+    public void modificarDinheiro(Double valor) {
+    if (this.dinheiro == null) this.dinheiro = 0.0;
+    this.dinheiro += valor;
+}
 }
